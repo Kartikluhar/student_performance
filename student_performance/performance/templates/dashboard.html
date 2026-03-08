@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+<h2 class="text-info mb-4">📊 Student Performance Dashboard</h2>
+
+<!-- Chart Card Styles -->
+<style>
+    .card canvas {
+        width: 100% !important;
+        height: 250px !important; /* uniform height for all charts */
+    }
+</style>
+
+<div class="row g-4">
+
+    <!-- Gender Distribution -->
+    <div class="col-md-4">
+        <div class="card p-4">
+            <h5 class="text-info mb-3">Gender Distribution</h5>
+            <canvas id="genderChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Failures Count -->
+    <div class="col-md-4">
+        <div class="card p-4">
+            <h5 class="text-info mb-3">Failures Count</h5>
+            <canvas id="failuresChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Average Grades -->
+    <div class="col-md-4">
+        <div class="card p-4">
+            <h5 class="text-info mb-3">Average Grades (G1, G2, G3)</h5>
+            <canvas id="gradesChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Study Time vs Final Grade -->
+    <div class="col-md-6">
+        <div class="card p-4">
+            <h5 class="text-info mb-3">Study Time vs Final Grade (G3)</h5>
+            <canvas id="studyChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Address Distribution -->
+    <div class="col-md-6">
+        <div class="card p-4">
+            <h5 class="text-info mb-3">Address Distribution</h5>
+            <canvas id="addressChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Higher Education Aspiration -->
+    <div class="col-md-6">
+        <div class="card p-4">
+            <h5 class="text-info mb-3">Aiming for Higher Education</h5>
+            <canvas id="higherChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Alcohol Consumption -->
+    <div class="col-md-6">
+        <div class="card p-4">
+            <h5 class="text-info mb-3">Average Alcohol Consumption</h5>
+            <canvas id="alcChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Parental Education -->
+    <div class="col-md-12">
+        <div class="card p-4">
+            <h5 class="text-info mb-3">Parental Education Levels</h5>
+            <canvas id="parentEduChart"></canvas>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // -------------------------------
+    // Pie / Doughnut Charts Options
+    // -------------------------------
+    const pieOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: '#e2e8f0' } } },
+        animation: {
+            duration: 1500,
+            easing: 'easeOutBounce'
+        }
+    };
+
+    // -------------------------------
+    // Bar / Line Charts Options
+    // -------------------------------
+    const barLineOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: '#e2e8f0' } } },
+        animation: {
+            duration: 1500,
+            easing: 'easeOutQuart'
+        },
+        scales: {
+            x: { ticks: { color: '#e2e8f0' } },
+            y: { ticks: { color: '#e2e8f0' } }
+        }
+    };
+
+    // -------------------------------
+    // Charts
+    // -------------------------------
+
+    // Gender Chart (Doughnut)
+    new Chart(document.getElementById('genderChart'), {
+        type: 'doughnut',
+        data: {
+            labels: {{ gender_labels|safe }},
+            datasets: [{
+                label: 'Count',
+                data: {{ gender_values|safe }},
+                backgroundColor: ['#00f5ff', '#6366f1'],
+                borderWidth: 1
+            }]
+        },
+        options: pieOptions
+    });
+
+    // Failures Chart (Bar)
+    new Chart(document.getElementById('failuresChart'), {
+        type: 'bar',
+        data: {
+            labels: {{ failures_labels|safe }},
+            datasets: [{
+                label: 'Number of Students',
+                data: {{ failures_values|safe }},
+                backgroundColor: '#facc15'
+            }]
+        },
+        options: barLineOptions
+    });
+
+    // Average Grades Chart (Line)
+    new Chart(document.getElementById('gradesChart'), {
+        type: 'line',
+        data: {
+            labels: {{ avg_grades_labels|safe }},
+            datasets: [{
+                label: 'Average Grade',
+                data: {{ avg_grades_values|safe }},
+                borderColor: '#00f5ff',
+                backgroundColor: 'rgba(0,245,255,0.2)',
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: barLineOptions
+    });
+
+    // Study Time vs Final Grade (Bar)
+    new Chart(document.getElementById('studyChart'), {
+        type: 'bar',
+        data: {
+            labels: {{ studytime_labels|safe }},
+            datasets: [{
+                label: 'Average G3',
+                data: {{ studytime_values|safe }},
+                backgroundColor: '#6366f1'
+            }]
+        },
+        options: barLineOptions
+    });
+
+    // Address Distribution (Pie)
+    new Chart(document.getElementById('addressChart'), {
+        type: 'pie',
+        data: {
+            labels: {{ address_labels|safe }},
+            datasets: [{
+                label: 'Count',
+                data: {{ address_values|safe }},
+                backgroundColor: ['#00f5ff','#6366f1']
+            }]
+        },
+        options: pieOptions
+    });
+
+    // Higher Education Aspiration (Doughnut)
+    new Chart(document.getElementById('higherChart'), {
+        type: 'doughnut',
+        data: {
+            labels: {{ higher_labels|safe }},
+            datasets: [{
+                label: 'Count',
+                data: {{ higher_values|safe }},
+                backgroundColor: ['#22c55e','#f97316']
+            }]
+        },
+        options: pieOptions
+    });
+
+    // Alcohol Consumption (Bar)
+    new Chart(document.getElementById('alcChart'), {
+        type: 'bar',
+        data: {
+            labels: {{ alc_labels|safe }},
+            datasets: [
+                { label: 'Workday (Dalc)', data: {{ dalc_values|safe }}, backgroundColor:'#f43f5e' },
+                { label: 'Weekend (Walc)', data: {{ walc_values|safe }}, backgroundColor:'#6366f1' }
+            ]
+        },
+        options: barLineOptions
+    });
+
+    // Parental Education Levels (Bar)
+    new Chart(document.getElementById('parentEduChart'), {
+        type: 'bar',
+        data: {
+            labels: {{ parentedu_labels|safe }},
+            datasets: [
+                { label: 'Mother', data: {{ medu_values|safe }}, backgroundColor:'#00f5ff' },
+                { label: 'Father', data: {{ fedu_values|safe }}, backgroundColor:'#6366f1' }
+            ]
+        },
+        options: barLineOptions
+    });
+
+</script>
+
+{% endblock %}

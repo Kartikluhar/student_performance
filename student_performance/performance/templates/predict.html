@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Predict Performance
+{% endblock %}
+
+{% block content %}
+  <div class="row g-4">
+    <!-- LEFT SIDE - INPUTS -->
+    <div class="col-md-5">
+      <div class="card p-4 sidebar-card">
+        <h4 class="text-info mb-4">📊 Student Inputs</h4>
+
+        <form action="#" method="POST">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="text-light">G1 (First Grade)</label>
+            <small class="text-secondary d-block">Previous exam score (0–20)</small>
+            <input type="number" name="g1" value="{{g1}}" min="0" max="20" class="form-control bg-dark text-light" required />
+          </div>
+
+          <div class="mb-3">
+            <label class="text-light">G2 (Second Grade)</label>
+            <small class="text-secondary d-block">Recent exam score (0–20)</small>
+            <input type="number" name="g2" value="{{g2}}" min="0" max="20" class="form-control bg-dark text-light" required />
+          </div>
+
+          <div class="mb-3">
+            <label class="text-light">Failures</label>
+            <small class="text-secondary d-block">Number of past failures (0–3)</small>
+            <input type="number" name="failures" value="{{failures}}" min="0" max="3" class="form-control bg-dark text-light" required />
+          </div>
+
+          <div class="mb-3">
+            <label class="text-light">Study Time</label>
+            <small class="text-secondary d-block">1:&lt;2h, 2:2–5h, 3:5–10h, 4:&gt;10h</small>
+            <input type="number" name="studytime" value="{{studytime}}" min="1" max="4" class="form-control bg-dark text-light" required />
+          </div>
+
+          <div class="mb-3">
+            <label class="text-light">Absences</label>
+            <small class="text-secondary d-block">Total school absences (0–100)</small>
+            <input type="number" name="absences" value="{{absences}}" min="0" max="100" class="form-control bg-dark text-light" required />
+          </div>
+
+          <button class="btn btn-primary w-100 mt-3">Predict Performance</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="col-md-7">
+      <!-- Prediction Result -->
+      <div class="card p-4 mb-4 text-center">
+        <h4 class="text-info mb-3">🎯 Prediction Result</h4>
+
+        <div class="result-box mb-3 {% if prediction == 'FAIL' %}
+            bg-danger text-white
+          {% else %}
+            bg-success text-white
+          {% endif %}">
+          {% if prediction == 'FAIL' %}
+            ⚠️ Student may fail. Needs improvement in performance.
+          {% elif prediction == 'PASS' %}
+            ✅ Student is likely to pass. Keep up the good work!
+          {% else %}
+            Submit data to see result
+          {% endif %}
+        </div>
+
+        <!-- Actual G3 -->
+        <div class="text-light mb-2">
+          <strong>Predicted G3 (0–20):</strong><br />
+          <span class="text-info fs-5">{{ g3_value|default:'0' }}</span>
+        </div>
+
+        <!-- G3 Percentage -->
+        <div class="text-light">
+          <strong>Predicted G3 (%):</strong><br />
+          <span class="text-success fs-5">{{ g3_percentage|default:'0' }} %</span>
+        </div>
+      </div>
+
+      <!-- Model Accuracy -->
+      <div class="card p-3 mb-4 text-center">
+        <h5 class="text-info">📈 Model Accuracy</h5>
+        <p class="text-light mb-0">
+          R² Score:
+          <span class="text-warning">{{ r2_score|default:'0.00' }} %</span>
+        </p>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="card p-4">
+        <h4 class="text-info mb-4">📊 Input Overview</h4>
+
+        <canvas id="performanceChart" height="120"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ctx = document.getElementById('performanceChart');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['G1', 'G2', 'Failures', 'Study Time', 'Absences'],
+            datasets: [{
+                label: 'Student Metrics',
+                data: [
+                    {{ g1|default:0 }},
+                    {{ g2|default:0 }},
+                    {{ failures|default:0 }},
+                    {{ studytime|default:0 }},
+                    {{ absences|default:0 }}
+                ],
+                backgroundColor: [
+                    '#00f5ff',
+                    '#6366f1',
+                    '#ef4444',
+                    '#22c55e',
+                    '#f59e0b'
+                ],
+                borderRadius: 8
+            }]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    labels: {
+                        color: 'white'
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: 'white' }
+                },
+                y: {
+                    ticks: { color: 'white' }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
