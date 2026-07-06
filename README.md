@@ -84,30 +84,12 @@ The dashboard provides:
 
 ---
 
-## 📂 Project Structure
-
-```
-Student-Performance-Analysis/
-│
-├── media/
-├── static/
-├── templates/
-├── ml_model/
-├── dataset/
-├── app/
-├── manage.py
-├── requirements.txt
-└── README.md
-```
-
----
-
 ## ⚙️ Installation
 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/student-performance-analysis.git
+git clone https://github.com/Kartikluhar/student-performance-analysis.git
 ```
 
 ### 2. Navigate to the Project
