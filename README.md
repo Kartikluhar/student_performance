@@ -89,7 +89,7 @@ The dashboard provides:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/Kartikluhar/student-performance-analysis.git
+git clone https://github.com/Kartikluhar/student_performance.git
 ```
 
 ### 2. Navigate to the Project
